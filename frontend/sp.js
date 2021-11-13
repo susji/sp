@@ -1,9 +1,18 @@
+function strtoarr(str) {
+    let result = [];
+    const tmp = str;
+    for (let i = 0; i < tmp.length; i++) {
+	result.push(tmp.charCodeAt(i));
+    }
+    return Uint8Array.from(result);
+}
+
 function objtoarr(obj) {
     let result = [];
     for (let i = 0; i < Object.keys(obj).length; i++) {
 	result.push(obj[i]);
     }
-    return Uint8Array.from(result);
+    return result;
 }
 
 async function encryptMessage(plaintext) {
@@ -51,4 +60,4 @@ async function decryptMessage(ciphertext, key, iv) {
     );
 }
 
-export { objtoarr, encryptMessage, decryptMessage };
+export { strtoarr, objtoarr, encryptMessage, decryptMessage };
