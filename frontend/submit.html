@@ -1,11 +1,84 @@
 <html>
   <head>
-    <script src="/sp.js"></script>
+    <script type="module">
+      import { encryptMessage, decryptMessage, objtoarr } from "./sp.js";
+
+      const setEncryptionResult = function (enc) {
+	  document.getElementById("encryption-result").value =
+	      btoa(String.fromCharCode(...new Uint8Array(enc)));
+      }
+
+      const getEncryptionResult = function () {
+	  let result = [];
+	  const tmp = atob(document.getElementById("encryption-result").value);
+	  for (let i = 0; i < tmp.length; i++) {
+	      result.push(tmp.charCodeAt(i))
+	  }
+	  return Uint8Array.from(result);
+      }
+
+      const setEncryptionSecrets = function (key, iv) {
+	  const comb = btoa(JSON.stringify(key)) + "|" + btoa(JSON.stringify(iv));
+	  document.getElementById("encryption-secrets").value = comb;
+      }
+
+      const getEncryptionSecrets = function () {
+	  const parts = document
+		.getElementById("encryption-secrets")
+		.value
+		.split("|", 2);
+	  return {
+	      key: JSON.parse(atob(parts[0])),
+	      iv: JSON.parse(atob(parts[1]))
+	  };
+      }
+
+      const setDecryptionResult = function (plaintext) {
+	  document.getElementById("message-decrypted").value =
+	      new TextDecoder().decode(plaintext)
+      }
+      
+      window.doEncrypt = async function () {
+	  console.log("[encrypt] ");
+	  const msg = document.getElementById("message-to-encrypt").value;
+	  const res = await encryptMessage(msg);
+
+	  setEncryptionResult(res.ciphertext);
+	  setEncryptionSecrets(res.key, res.iv);
+      }
+      window.doDecrypt = async function () {
+	  console.log("[decrypt]");
+	  const msg = getEncryptionResult();
+	  const secrets = getEncryptionSecrets();
+
+	  const iv = objtoarr(secrets.iv);
+	  try {
+	      const res = await decryptMessage(msg, secrets.key, iv);
+	      setDecryptionResult(res);
+	  } catch (err) {
+	      console.log("Decryption failed: ", err);
+	  }
+      }
+    </script>
   </head>
   <body>
-    <form onsubmit="encryptMessage()">
-      <input type="textbox" id="message-to-encrypt">
-      <input type="submit">
-    </form>
+    <div>
+      <form onsubmit="event.preventDefault(); doEncrypt();">
+	<input type="textarea" id="message-to-encrypt" value="Hello World!">
+	<input type="submit" value="Encrypt">
+      </form>
+    </div>
+    
+    <div>
+      Ciphertext: <input type="textbox" id="encryption-result">
+      Secrets: <input type="textbox" id="encryption-secrets">
+    </div>
+
+    <div>
+      <form onsubmit="event.preventDefault(); doDecrypt();">
+	<input type="textarea" id="message-decrypted" placeholder="Decrypted..." readonly>
+	<input type="submit" value="Decrypt">
+      </form>
+    </div>
   </body>
 </html>
