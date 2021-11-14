@@ -1,7 +1,8 @@
 <html>
   <head>
     <script type="module">
-      import { encryptMessage, decryptMessage, StringToArray, ObjectToArray } from "./sp.js";
+      import { encryptMessage, decryptMessage, generateKey,
+	       StringToArray, ObjectToArray } from "./sp.js";
 
       const setEncryptionResult = function (enc, iv) {
 	  const i = btoa(JSON.stringify(iv));
@@ -41,6 +42,10 @@
       }
 
       window.getCiphertext = getEncryptionResult;
+      window.scrambleSecret = async function () {
+	  const key = await window.crypto.subtle.exportKey("jwk", await generateKey());
+	  setEncryptionSecret(key);
+      }
 
       window.doEncrypt = async function (msg) {
 	  console.log("[encrypt]");
@@ -54,6 +59,7 @@
 	  console.log("[decrypt]");
 	  const key = getEncryptionSecret();
 	  const res = getEncryptionResult();
+	  setDecryptionResult("");
 
 	  const iv = Uint8Array.from(ObjectToArray(res.iv));
 	  try {
@@ -83,6 +89,7 @@
 		     id="encryption-result"
 		     placeholder="Press 'Encrypt'."
 		     readonly></textarea>
+      <input type="button" onclick="scrambleSecret()" value="Scramble secret">
     </div>
 
     <div>

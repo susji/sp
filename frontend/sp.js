@@ -14,8 +14,8 @@ function ObjectToArray(obj) {
     return result;
 }
 
-async function encryptMessage(plaintext) {
-    let key = await window.crypto.subtle.generateKey(
+async function generateKey() {
+    return await window.crypto.subtle.generateKey(
 	{
 	    name: "AES-GCM",
 	    length: 256,
@@ -23,7 +23,10 @@ async function encryptMessage(plaintext) {
 	true,
 	["encrypt", "decrypt"]
     );
+}
 
+async function encryptMessage(plaintext) {
+    const key = await generateKey();
     const iv = await window.crypto.getRandomValues(new Uint8Array(12));
     const ciphertext = await window.crypto.subtle.encrypt(
 	{
@@ -60,4 +63,4 @@ async function decryptMessage(ciphertext, key, iv) {
     );
 }
 
-export { StringToArray, ObjectToArray, encryptMessage, decryptMessage };
+export { StringToArray, ObjectToArray, encryptMessage, decryptMessage, generateKey };
