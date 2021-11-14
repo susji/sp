@@ -33,8 +33,7 @@
       }
 
       const setDecryptionResult = function (plaintext) {
-	  document.getElementById("message-decrypted").value =
-	      new TextDecoder().decode(plaintext)
+	  document.getElementById("message-decrypted").value = plaintext;
       }
 
       window.getPlaintext = function () {
@@ -47,6 +46,7 @@
 	  console.log("[encrypt]");
 	  const res = await encryptMessage(msg);
 
+	  setDecryptionResult("");
 	  setEncryptionResult(res.ciphertext, res.iv);
 	  setEncryptionSecret(res.key);
       }
@@ -61,7 +61,7 @@
 		  res.ciphertext,
 		  key,
 		  iv);
-	      setDecryptionResult(plaintext);
+	      setDecryptionResult(new TextDecoder().decode(plaintext));
 	  } catch (err) {
 	      console.log("Decryption failed: ", err);
 	  }
@@ -71,18 +71,26 @@
   <body>
     <div>
       <form onsubmit="event.preventDefault(); doEncrypt(getPlaintext());">
-	<textarea id="message-to-encrypt">Hello World!</textarea>
+	<textarea
+	  id="message-to-encrypt"
+	  placeholder="Insert text for encryption here.">Hello World!</textarea>
 	<input type="submit" value="Encrypt">
       </form>
     </div>
 
     <div>
-      Result blob: <textarea id="encryption-result" readonly></textarea>
+      Result blob: <textarea
+		     id="encryption-result"
+		     placeholder="Press 'Encrypt'."
+		     readonly></textarea>
     </div>
 
     <div>
       <form onsubmit="event.preventDefault(); doDecrypt(getCiphertext());">
-	<textarea id="message-decrypted" placeholder="Decrypted..." readonly></textarea>
+	<textarea
+	  id="message-decrypted"
+	  placeholder="Press 'Decrypt'."
+	  readonly></textarea>
 	<input type="submit" value="Decrypt">
       </form>
     </div>
