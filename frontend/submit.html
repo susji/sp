@@ -2,7 +2,7 @@
   <head>
     <script type="module">
       import { encryptMessage, decryptMessage, strtoarr, objtoarr } from "./sp.js";
-
+      
       const setEncryptionResult = function (enc) {
 	  document.getElementById("encryption-result").value =
 	      btoa(String.fromCharCode(...new Uint8Array(enc)));
@@ -33,18 +33,23 @@
 	  document.getElementById("message-decrypted").value =
 	      new TextDecoder().decode(plaintext)
       }
+
+
+      window.getPlaintext = function () {
+	  return document.getElementById("message-to-encrypt").value
+      }
       
-      window.doEncrypt = async function () {
-	  console.log("[encrypt] ");
-	  const msg = document.getElementById("message-to-encrypt").value;
+      window.getCiphertext = getEncryptionResult;
+      
+      window.doEncrypt = async function (msg) {
+	  console.log("[encrypt]");
 	  const res = await encryptMessage(msg);
 
 	  setEncryptionResult(res.ciphertext);
 	  setEncryptionSecrets(res.key, res.iv);
       }
-      window.doDecrypt = async function () {
+      window.doDecrypt = async function (msg) {
 	  console.log("[decrypt]");
-	  const msg = getEncryptionResult();
 	  const secrets = getEncryptionSecrets();
 
 	  const iv = Uint8Array.from(objtoarr(secrets.iv));
@@ -59,7 +64,7 @@
   </head>
   <body>
     <div>
-      <form onsubmit="event.preventDefault(); doEncrypt();">
+      <form onsubmit="event.preventDefault(); doEncrypt(getPlaintext());">
 	<input type="textarea" id="message-to-encrypt" value="Hello World!">
 	<input type="submit" value="Encrypt">
       </form>
@@ -71,7 +76,7 @@
     </div>
 
     <div>
-      <form onsubmit="event.preventDefault(); doDecrypt();">
+      <form onsubmit="event.preventDefault(); doDecrypt(getCiphertext());">
 	<input type="textarea" id="message-decrypted" placeholder="Decrypted..." readonly>
 	<input type="submit" value="Decrypt">
       </form>
