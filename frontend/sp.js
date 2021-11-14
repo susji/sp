@@ -1,13 +1,13 @@
-function strtoarr(str) {
+function StringToArray(str) {
     let result = [];
     const tmp = str;
     for (let i = 0; i < tmp.length; i++) {
 	result.push(tmp.charCodeAt(i));
     }
-    return Uint8Array.from(result);
+    return result;
 }
 
-function objtoarr(obj) {
+function ObjectToArray(obj) {
     let result = [];
     for (let i = 0; i < Object.keys(obj).length; i++) {
 	result.push(obj[i]);
@@ -60,4 +60,4 @@ async function decryptMessage(ciphertext, key, iv) {
     );
 }
 
-export { strtoarr, objtoarr, encryptMessage, decryptMessage };
+export { StringToArray, ObjectToArray, encryptMessage, decryptMessage };

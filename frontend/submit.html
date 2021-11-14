@@ -1,7 +1,7 @@
 <html>
   <head>
     <script type="module">
-      import { encryptMessage, decryptMessage, strtoarr, objtoarr } from "./sp.js";
+      import { encryptMessage, decryptMessage, StringToArray, ObjectToArray } from "./sp.js";
       
       const setEncryptionResult = function (enc) {
 	  document.getElementById("encryption-result").value =
@@ -10,7 +10,7 @@
 
       const getEncryptionResult = function () {
 	  return Uint8Array.from(
-	      strtoarr(atob(document.getElementById("encryption-result").value)));
+	      StringToArray(atob(document.getElementById("encryption-result").value)));
       }
 
       const setEncryptionSecrets = function (key, iv) {
@@ -52,7 +52,7 @@
 	  console.log("[decrypt]");
 	  const secrets = getEncryptionSecrets();
 
-	  const iv = Uint8Array.from(objtoarr(secrets.iv));
+	  const iv = Uint8Array.from(ObjectToArray(secrets.iv));
 	  try {
 	      const res = await decryptMessage(msg, secrets.key, iv);
 	      setDecryptionResult(res);
