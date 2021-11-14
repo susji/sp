@@ -3,22 +3,63 @@ package main
 import (
 	"context"
 	"flag"
+	"io"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+
+	"example.com/s/sp/storage"
+)
+
+const (
+	BYTES_ID      = 12
+	MAX_ENTRIES   = 100
+	MAXLEN_SUBMIT = 1024 * 5
 )
 
 type server struct {
 	laddr, endpoint string
+
+	storage *storage.Storage
 }
 
-func (s *server) fetch(r *http.Request, w http.ResponseWriter) {
-
+func (s *server) fetch(r *http.Request, w http.ResponseWriter, id string) {
+	e := s.storage.Fetch(id)
+	if e == nil {
+		log.Print("fetch: cannot find with id: ", id)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if _, err := w.Write(e); err != nil {
+		log.Print("fetch: response write failed: ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 }
 
 func (s *server) submit(r *http.Request, w http.ResponseWriter) {
+	mr := http.MaxBytesReader(w, r.Body, MAXLEN_SUBMIT)
+	defer mr.Close()
+	body, err := io.ReadAll(mr)
+	if err != nil {
+		log.Print("submit: body read failed: ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
+	id, err := s.storage.Insert(body)
+	if err != nil {
+		log.Print("submit: storage insertion failed: ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if _, err := w.Write([]byte(id)); err != nil {
+		log.Print("submit: id write failed: ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	log.Printf("submit: got %d bytes with id %s", len(body), id)
 }
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +74,7 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		s.submit(r, w)
 		return
 	case r.Method == "GET":
-		s.fetch(r, w)
+		s.fetch(r, w, url)
 		return
 	default:
 		log.Printf("bad request: %s (%s)", url, r.Method)
@@ -44,7 +85,7 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	var logTimestamps bool
-	s := &server{}
+	s := &server{storage: storage.New(MAX_ENTRIES, MAXLEN_SUBMIT, BYTES_ID)}
 
 	flag.StringVar(&s.laddr, "listen", "localhost:19680", "HTTP listen address")
 	flag.BoolVar(
