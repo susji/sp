@@ -2,31 +2,35 @@
   <head>
     <script type="module">
       import { encryptMessage, decryptMessage, StringToArray, ObjectToArray } from "./sp.js";
-      
-      const setEncryptionResult = function (enc) {
-	  document.getElementById("encryption-result").value =
-	      btoa(String.fromCharCode(...new Uint8Array(enc)));
+
+      const setEncryptionResult = function (enc, iv) {
+	  const i = btoa(JSON.stringify(iv));
+	  const e = btoa(String.fromCharCode(...new Uint8Array(enc)));
+	  const comb = i + "|" + e;
+	  document.getElementById("encryption-result").value = comb;
       }
 
       const getEncryptionResult = function () {
-	  return Uint8Array.from(
-	      StringToArray(atob(document.getElementById("encryption-result").value)));
-      }
-
-      const setEncryptionSecrets = function (key, iv) {
-	  const comb = btoa(JSON.stringify(key)) + "|" + btoa(JSON.stringify(iv));
-	  document.getElementById("encryption-secrets").value = comb;
-      }
-
-      const getEncryptionSecrets = function () {
 	  const parts = document
-		.getElementById("encryption-secrets")
+		.getElementById("encryption-result")
 		.value
 		.split("|", 2);
+	  const i = JSON.parse(atob(parts[0]));
+	  const e = Uint8Array.from(StringToArray(atob(parts[1])));
+	  console.log("getEncryptionResult: ", i, e);
 	  return {
-	      key: JSON.parse(atob(parts[0])),
-	      iv: JSON.parse(atob(parts[1]))
-	  };
+	      iv: i,
+	      ciphertext: e
+	  }
+      }
+
+      const setEncryptionSecret = function (key) {
+	  document.getElementById("encryption-secret").value =
+	      btoa(JSON.stringify(key));
+      }
+
+      const getEncryptionSecret = function () {
+	  return JSON.parse(atob(document.getElementById("encryption-secret").value));
       }
 
       const setDecryptionResult = function (plaintext) {
@@ -38,24 +42,28 @@
       window.getPlaintext = function () {
 	  return document.getElementById("message-to-encrypt").value
       }
-      
+
       window.getCiphertext = getEncryptionResult;
-      
+
       window.doEncrypt = async function (msg) {
 	  console.log("[encrypt]");
 	  const res = await encryptMessage(msg);
 
-	  setEncryptionResult(res.ciphertext);
-	  setEncryptionSecrets(res.key, res.iv);
+	  setEncryptionResult(res.ciphertext, res.iv);
+	  setEncryptionSecret(res.key);
       }
       window.doDecrypt = async function (msg) {
 	  console.log("[decrypt]");
-	  const secrets = getEncryptionSecrets();
+	  const key = getEncryptionSecret();
+	  const res = getEncryptionResult();
 
-	  const iv = Uint8Array.from(ObjectToArray(secrets.iv));
+	  const iv = Uint8Array.from(ObjectToArray(res.iv));
 	  try {
-	      const res = await decryptMessage(msg, secrets.key, iv);
-	      setDecryptionResult(res);
+	      const plaintext = await decryptMessage(
+		  res.ciphertext,
+		  key,
+		  iv);
+	      setDecryptionResult(plaintext);
 	  } catch (err) {
 	      console.log("Decryption failed: ", err);
 	  }
@@ -69,10 +77,10 @@
 	<input type="submit" value="Encrypt">
       </form>
     </div>
-    
+
     <div>
       Ciphertext: <textarea id="encryption-result" readonly></textarea>
-      Secrets: <textarea id="encryption-secrets" readonly></textarea>
+      Secret: <textarea id="encryption-secret" readonly></textarea>
     </div>
 
     <div>

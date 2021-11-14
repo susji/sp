@@ -36,7 +36,6 @@ async function encryptMessage(plaintext) {
     );
 
     console.log("iv: ", iv.length, iv);
-    
     return {
 	ciphertext: ciphertext,
 	iv: iv,
