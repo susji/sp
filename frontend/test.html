@@ -1,6 +1,7 @@
 <html>
   <head>
     <script type="module">
+      import { config } from "./config.js"
       import { encryptMessage, decryptMessage, generateKey,
 	       StringToArray, ObjectToArray } from "./sp.js";
 
@@ -72,6 +73,9 @@
 	      console.log("Decryption failed: ", err);
 	  }
       }
+
+      console.log("Backend at ", config.remote);
+      console.log("Submission endpoint is ", config.endpointSubmit);
     </script>
   </head>
   <body>
