@@ -63,6 +63,14 @@ func (s *server) submit(r *http.Request, w http.ResponseWriter) {
 }
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+	w.Header().Set(
+		"Access-Control-Allow-Headers",
+		"Accept, Content-Type, Content-Length")
+	if r.Method == "OPTIONS" {
+		return
+	}
 	if len(r.URL.Path) == 0 {
 		log.Print("empty request")
 		w.WriteHeader(http.StatusBadRequest)
