@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	BYTES_ID      = 12
-	MAX_ENTRIES   = 100
+	BYTES_ID      = 4
+	MAX_ENTRIES   = 10_000
 	MAXLEN_SUBMIT = 1024 * 5
 )
 
