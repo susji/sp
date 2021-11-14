@@ -25,19 +25,17 @@
       }
 
       const setEncryptionSecret = function (key) {
-	  document.getElementById("encryption-secret").value =
-	      btoa(JSON.stringify(key));
+	  window.top.location.hash = btoa(JSON.stringify(key));
       }
 
       const getEncryptionSecret = function () {
-	  return JSON.parse(atob(document.getElementById("encryption-secret").value));
+	  return JSON.parse(atob(window.top.location.hash.substr(1)));
       }
 
       const setDecryptionResult = function (plaintext) {
 	  document.getElementById("message-decrypted").value =
 	      new TextDecoder().decode(plaintext)
       }
-
 
       window.getPlaintext = function () {
 	  return document.getElementById("message-to-encrypt").value
@@ -80,7 +78,6 @@
 
     <div>
       Ciphertext: <textarea id="encryption-result" readonly></textarea>
-      Secret: <textarea id="encryption-secret" readonly></textarea>
     </div>
 
     <div>
