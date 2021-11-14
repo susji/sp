@@ -36,6 +36,7 @@ func (s *server) fetch(r *http.Request, w http.ResponseWriter, id string) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	log.Print("fetch: ", id)
 }
 
 func (s *server) submit(r *http.Request, w http.ResponseWriter) {
