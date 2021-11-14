@@ -1,8 +1,7 @@
 function StringToArray(str) {
     let result = [];
-    const tmp = str;
-    for (let i = 0; i < tmp.length; i++) {
-	result.push(tmp.charCodeAt(i));
+    for (let i = 0; i < str.length; i++) {
+	result.push(str.charCodeAt(i));
     }
     return result;
 }
