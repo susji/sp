@@ -63,6 +63,9 @@
 	  setDecryptionResult("");
 
 	  const iv = Uint8Array.from(ObjectToArray(res.iv));
+
+	  console.log("key: ", key);
+	  console.log("res: ", res);
 	  try {
 	      const plaintext = await decryptMessage(
 		  res.ciphertext,

@@ -46,6 +46,7 @@ async function encryptMessage(plaintext) {
 }
 
 async function decryptMessage(ciphertext, key, iv) {
+    console.log("key: ", key);
     const keydec = await window.crypto.subtle.importKey(
 	"jwk",
 	key,

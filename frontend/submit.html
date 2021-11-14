@@ -5,17 +5,17 @@
       import { encryptMessage } from "./sp.js";
 
       const setEncryptionResult = async function (enc, iv, key) {
-	  const i = btoa(JSON.stringify(iv));
+	  const i = btoa(String.fromCharCode(...iv));
 	  const e = btoa(String.fromCharCode(...new Uint8Array(enc)));
 	  const comb = i + "|" + e;
-
+	  console.log("setEncryptionResult, iv: ", typeof(i), i);
 	  const res = await fetch(
 	      config.remote + "/" + config.endpointSubmit,
 	      {
 		  method: "POST",
 		  body: comb,
 		  headers: {
-		      "Content-Type": "application/octet-stream"
+		      "Content-Type": "text/plain"
 		  }
 	      });
 	  console.log("POST result: ", res.status);
