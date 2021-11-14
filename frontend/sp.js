@@ -18,22 +18,24 @@ function ObjectToArray(obj) {
 async function encryptMessage(plaintext) {
     let key = await window.crypto.subtle.generateKey(
 	{
-	    name: "AES-CBC",
+	    name: "AES-GCM",
 	    length: 256,
 	},
 	true,
 	["encrypt", "decrypt"]
     );
 
-    const iv = await window.crypto.getRandomValues(new Uint8Array(16));
+    const iv = await window.crypto.getRandomValues(new Uint8Array(12));
     const ciphertext = await window.crypto.subtle.encrypt(
 	{
-	    name: "AES-CBC",
+	    name: "AES-GCM",
 	    iv: iv
 	},
 	key,
 	new TextEncoder().encode(plaintext),
     );
+
+    console.log("iv: ", iv.length, iv);
     
     return {
 	ciphertext: ciphertext,
@@ -46,13 +48,13 @@ async function decryptMessage(ciphertext, key, iv) {
     const keydec = await window.crypto.subtle.importKey(
 	"jwk",
 	key,
-	"AES-CBC",
+	"AES-GCM",
 	true,
 	["encrypt", "decrypt"]);
 
     return await window.crypto.subtle.decrypt(
 	{
-	    name: "AES-CBC",
+	    name: "AES-GCM",
 	    iv: iv,
 	},
 	keydec,
