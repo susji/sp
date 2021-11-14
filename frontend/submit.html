@@ -65,19 +65,19 @@
   <body>
     <div>
       <form onsubmit="event.preventDefault(); doEncrypt(getPlaintext());">
-	<input type="textarea" id="message-to-encrypt" value="Hello World!">
+	<textarea id="message-to-encrypt">Hello World!</textarea>
 	<input type="submit" value="Encrypt">
       </form>
     </div>
     
     <div>
-      Ciphertext: <input type="textbox" id="encryption-result" readonly>
-      Secrets: <input type="textbox" id="encryption-secrets" readonly>
+      Ciphertext: <textarea id="encryption-result" readonly></textarea>
+      Secrets: <textarea id="encryption-secrets" readonly></textarea>
     </div>
 
     <div>
       <form onsubmit="event.preventDefault(); doDecrypt(getCiphertext());">
-	<input type="textarea" id="message-decrypted" placeholder="Decrypted..." readonly>
+	<textarea id="message-decrypted" placeholder="Decrypted..." readonly></textarea>
 	<input type="submit" value="Decrypt">
       </form>
     </div>
