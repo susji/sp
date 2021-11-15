@@ -11,10 +11,14 @@ def b64_urldecode_raw(enc):
     return bd(enc + '=' * (4 - len(enc) % 4))
 
 
-def api_extract_blob(endpoint):
+def pheader(name):
     print()
-    print("Fetch")
-    print("-----")
+    print(name)
+    print("-" * len(name))
+
+
+def api_extract_blob(endpoint):
+    pheader("Fetch")
     print(f"  [] endpoint={endpoint}")
     r = requests.get(endpoint)
     if r.status_code != 200:
@@ -25,9 +29,7 @@ def api_extract_blob(endpoint):
 
 
 def decrypt(nonce, ciphertext, key):
-    print()
-    print("Decrypt")
-    print("-------")
+    pheader("Decrypt")
     print(f"  [] nonce={len(nonce)}")
     print(f"  [] ciphertext={len(ciphertext)}")
     print(f"  [] key={len(key)}")
@@ -36,9 +38,7 @@ def decrypt(nonce, ciphertext, key):
 
     
 def extract_jwk(key):
-    print()
-    print("Key extraction")
-    print("--------------")
+    pheader("Key extraction")
     res = json.loads(key)
     assert res["alg"] == "A128GCM"
     dec = b64_urldecode_raw(res["k"])
