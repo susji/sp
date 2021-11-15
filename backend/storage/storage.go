@@ -41,7 +41,7 @@ func (s *Storage) Insert(data []byte) (string, error) {
 	if _, err := crand.Read(idraw); err != nil {
 		return "", err
 	}
-	id := base64.URLEncoding.EncodeToString(idraw)
+	id := base64.RawURLEncoding.EncodeToString(idraw)
 	s.Entries[id] = data
 	return id, nil
 }
