@@ -29,7 +29,7 @@
 	  
 	  console.log("ID: ", id);
 	  document.getElementById("submit-result").innerHTML =
-	      "/fetch.html" + "#" + id + "," + keyprint;
+	      '<a href="fetch.html' + '#' + id + ',' + keyprint + '">your paste</a>';
       }
       
       window.getPlaintext = function () {
