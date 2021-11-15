@@ -1,3 +1,4 @@
+.PHONY: run
 run: venv
 	venv/bin/python3 terminal-client.py
 
