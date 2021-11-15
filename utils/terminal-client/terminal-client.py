@@ -24,8 +24,8 @@ def api_extract_blob(endpoint):
     if r.status_code != 200:
         raise RuntimeError(f"failed fetching blob, got {r}")
     print(f"    => got blob of {len(r.text)} bytes.")
-    iv, ciphertext = r.text.split("|")
-    return iv, ciphertext
+    nonce, ciphertext = r.text.split("|")
+    return nonce, ciphertext
 
 
 def decrypt(nonce, ciphertext, key):
