@@ -5,7 +5,6 @@ from urllib.parse import urlparse
 from base64 import urlsafe_b64decode as bd
 import json
 import requests
-import fileinput
 
 
 def b64_urldecode_raw(enc):
