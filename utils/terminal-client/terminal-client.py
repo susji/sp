@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
 
 from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
 from urllib.parse import urlparse
-from base64 import urlsafe_b64decode as bd
+from base64 import urlsafe_b64decode as bd, standard_b64encode as be, urlsafe_b64encode
 import argparse
+import sys
 import json
 import requests
 
 
 def b64_urldecode_raw(enc):
     return bd(enc + '=' * (4 - len(enc) % 4))
+
+
+def b64_urlencode_raw(dec):
+    return urlsafe_b64encode(dec).replace(b"=", b"")
 
 
 def ppoint(content):
@@ -61,10 +67,52 @@ def fetch():
     print(plaintext.decode())
 
 
+def encrypt(plaintext):
+    pheader("Encrypt")
+    key = get_random_bytes(16)
+    nonce = get_random_bytes(12)
+    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+    ciphertext, tag = cipher.encrypt_and_digest(plaintext.encode("utf-8"))
+    ciphertext = ciphertext + tag
+    ppoint(f"key_len={len(key)}")
+    ppoint(f"nonce_len={len(nonce)}")
+    ppoint(f"cipher={cipher}")
+    ppoint(f"ciphertext+tag={be(ciphertext)}")
+    return key, nonce, ciphertext
+
+
+def post(endpoint, ciphertext):
+    r = requests.post(endpoint, data=ciphertext)
+    if r.status_code != 200:
+        raise RuntimeError(f"post failed: {r.status_code}")
+    ppoint(f"paste ID={r.text}")
+    return r.text
+
+
+def generate_jwk(rawkey):
+    return json.dumps({
+        "alg": "A128GCM",
+        "ext": True,
+        "k": b64_urlencode_raw(rawkey).decode("utf-8"),
+        "key_ops": ["decrypt", "encrypt"],
+        "kty": "oct"
+    })
+
+
 def submit():
     u = urlparse(input("Give backend address: "))
-    endpoint = f"{u.scheme}://{u.netloc}"
+    endpoint = f"{u.scheme}://{u.netloc}{u.path}"
     print(endpoint)
+
+    plaintext = ""
+    print("Give your paste and end with Ctrl-D:")
+    for line in sys.stdin:
+        plaintext += line
+
+    key, nonce, ciphertext = encrypt(plaintext)
+    pid = post(endpoint, be(nonce).decode() + "|" + be(ciphertext).decode())
+    jwk = generate_jwk(key)
+    ppoint(f"Your decryption anchor: #{pid},{be(jwk.encode()).decode()}")
 
 
 if __name__ == "__main__":
