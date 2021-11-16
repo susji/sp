@@ -3,18 +3,19 @@
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from urllib.parse import urlparse
-from base64 import urlsafe_b64decode as bd, standard_b64encode as be, urlsafe_b64encode
+from base64 import (urlsafe_b64decode, urlsafe_b64encode, standard_b64encode as
+                    be, standard_b64decode as bd)
 import argparse
 import sys
 import json
 import requests
 
 
-def b64_urldecode_raw(enc):
-    return bd(enc + '=' * (4 - len(enc) % 4))
+def b64_urlraw_decode(enc):
+    return urlsafe_b64decode(enc + '=' * (4 - len(enc) % 4))
 
 
-def b64_urlencode_raw(dec):
+def b64_urlraw_encode(dec):
     return urlsafe_b64encode(dec).replace(b"=", b"")
 
 
@@ -52,7 +53,7 @@ def extract_jwk(key):
     pheader("Key extraction")
     res = json.loads(key)
     assert res["alg"] == "A128GCM"
-    dec = b64_urldecode_raw(res["k"])
+    dec = b64_urlraw_decode(res["k"])
     ppoint(f"=> got key of {len(dec)} bytes")
     return dec
 
@@ -93,7 +94,7 @@ def generate_jwk(rawkey):
     return json.dumps({
         "alg": "A128GCM",
         "ext": True,
-        "k": b64_urlencode_raw(rawkey).decode("utf-8"),
+        "k": b64_urlraw_encode(rawkey).decode("utf-8"),
         "key_ops": ["decrypt", "encrypt"],
         "kty": "oct"
     })
