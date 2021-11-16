@@ -8,21 +8,26 @@ if [ -z "$YOUR_DOMAIN" ]; then
 fi
 
 apt install -y nginx fail2ban certbot python3-certbot-nginx
-certbot --nginx -d $YOUR_DOMAIN
-certbot renew --dry-run
+
+install -v -m 0755 -o root -g root sp /usr/local/bin/sp
+install -v -m 0755 -o root -g root -d /var/www/sp
+install -v -m 0755 -o root -g root *.js *.html /var/www/sp
+install -v -m 0644 -o root -g root sp.service /etc/systemd/system/sp.service
 
 adduser --force-badname --system --no-create-home --group _sp
 
-cp -v sp.service /etc/systemd/system/
+certbot --nginx -d $YOUR_DOMAIN
+certbot renew --dry-run
+
 systemctl daemon-reload
 systemctl enable sp.service
 systemctl start sp.service
 systemctl status sp.service
 
-cp -v yourdomain /etc/nginx/sites-available/$YOUR_DOMAIN
+install -m 0644 -o root -g root yourdomain /etc/nginx/sites-available/$YOUR_DOMAIN
+
 sed -i -E \
     "s|yourdomain|${YOUR_DOMAIN}|g" \
     /etc/nginx/sites-available/$YOUR_DOMAIN
-cp -v jail.local /etc/fail2ban/
 ln -s /etc/nginx/sites-available/$YOUR_DOMAIN /etc/nginx/sites-enabled
 rm -f /etc/nginx/sites-enabled/default
