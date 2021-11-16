@@ -1,0 +1,23 @@
+html {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+}
+
+body {
+        font-size: 150%;
+}
+
+textarea {
+        flex: 1 1 auto;
+        font-size: 150%;
+        width: 80%;
+        height: 35%;
+}
+
+input {
+        font-size: 150%;
+        width: 80%;
+        height: 10%;
+}

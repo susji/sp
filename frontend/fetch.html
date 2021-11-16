@@ -1,5 +1,6 @@
 <html>
   <head>
+    <link rel="stylesheet" href="style.css">
     <script type="module">
       import { config } from "./config.js"
       import { decryptMessage, StringToArray, ObjectToArray } from "./sp.js";
@@ -74,21 +75,25 @@
   </head>
   <body>
     <div>
-      <input type="button" onclick="getCiphertext()" value="Fetch">
-      Result blob: <textarea
-		     id="ciphertext"
-		     placeholder="Press 'Fetch'."
-		     readonly></textarea>
+      <p>
+	<textarea id="ciphertext" placeholder="Press 'Fetch'." readonly></textarea>
+      </p>
+      <p>
+	<input type="button" onclick="getCiphertext()" value="Fetch">
+      </p>
     </div>
 
     <div>
       <form onsubmit="event.preventDefault(); doDecrypt();">
-	<textarea
-	  style="width: 80%; height: 400px;"
-	  id="message-decrypted"
-	  placeholder="Press 'Decrypt'."
-	  readonly></textarea>
-	<input type="submit" value="Decrypt">
+	<p>
+	  <textarea
+	    id="message-decrypted"
+	    placeholder="Press 'Decrypt'."
+	    readonly></textarea>
+	</p>
+	<p>
+	  <input type="submit" value="Decrypt">
+	</p>
       </form>
     </div>
   </body>

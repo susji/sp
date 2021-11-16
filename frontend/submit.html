@@ -1,5 +1,6 @@
 <html>
   <head>
+    <link rel="stylesheet" href="style.css">
     <script type="module">
       import { config } from "./config.js"
       import { encryptMessage } from "./sp.js";
@@ -45,16 +46,19 @@
 
       console.log("Backend at ", config.remote);
       console.log("Submission endpoint is ", config.endpointSubmit);
-    </script>
+      </script>
   </head>
   <body>
     <div>
       <form onsubmit="event.preventDefault(); doEncrypt(getPlaintext());">
-	<textarea
-	  style="width: 80%; height: 400px;"
-	  id="message-to-encrypt"
-	  placeholder="Insert text for encryption here.">Hello World!</textarea>
-	<input type="submit" value="Encrypt and Submit">
+	<p>
+	  <textarea
+	    id="message-to-encrypt"
+	    placeholder="Insert text for encryption here.">Hello World!</textarea>
+	</p>
+	<p>
+	  <input type="submit" value="Encrypt and Submit">
+	</p>
       </form>
     </div>
 
