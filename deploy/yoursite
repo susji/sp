@@ -1,0 +1,55 @@
+limit_req_zone $binary_remote_addr zone=sp_per_ip:20m rate=10r/s;
+
+server {
+    limit_req zone=sp_per_ip burst=16 nodelay;
+
+    root /var/www/html;
+    index index.html index-nginx-debian.html;
+
+    server_name yourdomain;
+
+    location = /robots.txt {
+        add_header Content-Type text/plain;
+        return 200 "User-agent: *\nDisallow: /\n";
+    }
+
+    location / {
+        limit_except GET POST OPTIONS {
+            deny all;
+        }
+        proxy_pass http://127.0.0.1:19680;
+    }
+
+    location /sp {
+        rewrite ^/[^/]+?/(.*)$ /$1 break;
+        root /var/www/sp;
+    }
+
+    client_body_buffer_size 4k;
+    client_header_buffer_size 1k;
+    client_max_body_size 8k;
+    large_client_header_buffers 2 1k;
+
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/yourdomain/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+
+server {
+    if ($host = yourdomain) {
+        return 301 https://$host$request_uri;
+        } # managed by Certbot
+
+
+
+        server_name yourdomain;
+        listen 80;
+        return 404; # managed by Certbot
+
+
+}
