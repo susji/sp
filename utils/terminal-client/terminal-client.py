@@ -3,6 +3,7 @@
 from Crypto.Cipher import AES
 from urllib.parse import urlparse
 from base64 import urlsafe_b64decode as bd
+import argparse
 import json
 import requests
 
@@ -40,7 +41,7 @@ def decrypt(nonce, ciphertext, key):
     cipher = AES.new(key, AES.MODE_GCM, nonce)
     return cipher.decrypt_and_verify(ciphertext[:-16], ciphertext[-16:])
 
-    
+
 def extract_jwk(key):
     pheader("Key extraction")
     res = json.loads(key)
@@ -50,7 +51,7 @@ def extract_jwk(key):
     return dec
 
 
-if __name__ == "__main__":
+def fetch():
     u = urlparse(input("Give fetch URL: "))
     ident, key = u.fragment.split(",")
     endpoint = f"{u.scheme}://{u.netloc}/{ident}"
@@ -58,4 +59,23 @@ if __name__ == "__main__":
     plaintext = decrypt(bd(nonce), bd(ciphertext), extract_jwk(bd(key)))
     print("--")
     print(plaintext.decode())
-    
+
+
+def submit():
+    u = urlparse(input("Give backend address: "))
+    endpoint = f"{u.scheme}://{u.netloc}"
+    print(endpoint)
+
+
+if __name__ == "__main__":
+    p = argparse.ArgumentParser(
+        description="Submit and fetch encrypted `sp` pastes.")
+    p.add_argument("mode", type=str, help="Either 'submit' or 'fetch'")
+    args = p.parse_args()
+
+    if args.mode == "fetch":
+        fetch()
+    elif args.mode == "submit":
+        submit()
+    else:
+        print(f"Unrecognized mode: {args.mode}")

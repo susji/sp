@@ -1,6 +1,12 @@
+TC ?= venv/bin/python3 terminal-client.py
+
 .PHONY: run
-run: venv
-	venv/bin/python3 terminal-client.py
+fetch: venv
+	$(TC) fetch
+
+.PHONY: submit
+submit: venv
+	$(TC) submit
 
 venv:
 	python3 -m venv venv
