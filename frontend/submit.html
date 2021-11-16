@@ -28,9 +28,14 @@
 	  const id = await res.text();
 	  const keyprint = btoa(JSON.stringify(key));
 	  
-	  console.log("ID: ", id);
-	  document.getElementById("submit-result").innerHTML =
-	      '<a href="fetch.html' + '#' + id + ',' + keyprint + '">your paste</a>';
+          console.log("ID: ", id);
+          let div = document.getElementById("submit-result");
+          let a = document.createElement("a");
+          a.appendChild(document.createTextNode("your paste"));
+          a.title = "your paste";
+          a.href = `fetch.html#${encodeURIComponent(id)},${keyprint}`;
+          div.innerHTML = "";
+          div.appendChild(a);
       }
       
       window.getPlaintext = function () {
@@ -46,7 +51,7 @@
 
       console.log("Backend at ", config.remote);
       console.log("Submission endpoint is ", config.endpointSubmit);
-      </script>
+    </script>
   </head>
   <body>
     <div>
