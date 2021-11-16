@@ -11,6 +11,10 @@ def b64_urldecode_raw(enc):
     return bd(enc + '=' * (4 - len(enc) % 4))
 
 
+def ppoint(content):
+    print(f"  * {content}")
+
+
 def pheader(name):
     print()
     print(name)
@@ -19,20 +23,20 @@ def pheader(name):
 
 def api_extract_blob(endpoint):
     pheader("Fetch")
-    print(f"  [] endpoint={endpoint}")
+    ppoint(f"endpoint={endpoint}")
     r = requests.get(endpoint)
     if r.status_code != 200:
         raise RuntimeError(f"failed fetching blob, got {r}")
-    print(f"    => got blob of {len(r.text)} bytes.")
+    ppoint(f"=> got blob of {len(r.text)} bytes")
     nonce, ciphertext = r.text.split("|")
     return nonce, ciphertext
 
 
 def decrypt(nonce, ciphertext, key):
     pheader("Decrypt")
-    print(f"  [] nonce={len(nonce)}")
-    print(f"  [] ciphertext={len(ciphertext)}")
-    print(f"  [] key={len(key)}")
+    ppoint(f"nonce={len(nonce)}")
+    ppoint(f"ciphertext={len(ciphertext)}")
+    ppoint(f"key={len(key)}")
     cipher = AES.new(key, AES.MODE_GCM, nonce)
     return cipher.decrypt_and_verify(ciphertext[:-16], ciphertext[-16:])
 
@@ -42,7 +46,7 @@ def extract_jwk(key):
     res = json.loads(key)
     assert res["alg"] == "A128GCM"
     dec = b64_urldecode_raw(res["k"])
-    print(f"    => got key of {len(dec)} bytes")
+    ppoint(f"=> got key of {len(dec)} bytes")
     return dec
 
 
