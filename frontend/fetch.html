@@ -47,8 +47,6 @@
 	  document.getElementById("message-decrypted").value = plaintext;
       }
 
-      window.getCiphertext = getEncryptionResult;
-
       window.doDecrypt = async function (msg) {
 	  console.log("[decrypt]");
 	  const key = getEncryptionSecret();
@@ -76,10 +74,9 @@
   <body>
     <div>
       <p>
-	<textarea id="ciphertext" placeholder="Press 'Fetch'." readonly></textarea>
-      </p>
-      <p>
-	<input type="button" onclick="getCiphertext()" value="Fetch">
+	<textarea
+	  id="ciphertext"
+	  placeholder="Press 'Fetch &amp; Decrypt'." readonly></textarea>
       </p>
     </div>
 
@@ -88,11 +85,11 @@
 	<p>
 	  <textarea
 	    id="message-decrypted"
-	    placeholder="Press 'Decrypt'."
+	    placeholder="Press 'Fetch &amp; Decrypt'."
 	    readonly></textarea>
 	</p>
 	<p>
-	  <input type="submit" value="Decrypt">
+	  <input type="submit" value="Fetch &amp; Decrypt">
 	</p>
       </form>
     </div>
