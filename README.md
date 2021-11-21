@@ -2,9 +2,9 @@
 
 `sp` is a minimalistic encrypted pastebin-clone. Presently it's mainly
 a proof-of-concept, so I advise against running it in production. In
-any case, you probably want to run it behind some TLS-terminating
-reverse proxy, so nginx stuff is included in the example deployment
-file.
+fact, it is better to assume that it's **unsafe** for use. In any case,
+you probably want to run it behind some TLS-terminating reverse proxy,
+so nginx stuff is included in the example deployment file.
 
 ## usage
 
