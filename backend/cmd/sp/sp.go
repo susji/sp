@@ -20,6 +20,7 @@ const (
 
 type server struct {
 	laddr, endpoint string
+	wildcardCors    bool
 
 	storage *storage.Storage
 }
@@ -64,11 +65,13 @@ func (s *server) submit(r *http.Request, w http.ResponseWriter) {
 }
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-	w.Header().Set(
-		"Access-Control-Allow-Headers",
-		"Accept, Content-Type, Content-Length")
+	if s.wildcardCors {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		w.Header().Set(
+			"Access-Control-Allow-Headers",
+			"Accept, Content-Type, Content-Length")
+	}
 	if r.Method == "OPTIONS" {
 		return
 	}
@@ -107,6 +110,11 @@ func main() {
 		"endpoint",
 		"submit",
 		"Endpoint for posting new pastes")
+	flag.BoolVar(
+		&s.wildcardCors,
+		"wildcard-cors",
+		false,
+		"Essentially 'Access-Control-Allow-Origin=*'")
 	flag.Parse()
 
 	if logTimestamps {
@@ -117,6 +125,7 @@ func main() {
 
 	log.Print("Listen address........ ", s.laddr)
 	log.Print("Submission endpoint... ", s.endpoint)
+	log.Print("Wildcard CORS......... ", s.wildcardCors)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	srv := http.Server{Addr: s.laddr, Handler: s}
