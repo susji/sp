@@ -21,9 +21,7 @@ server {
     }
 
     location /{{ host.data.FRONTEND_PATH }} {
-{% if host.data.FRONTEND_PATH | length %}
         rewrite ^/[^/]+?/(.*)$ /$1 break;
-{% endif %}
         root /var/www/sp;
     }
 
