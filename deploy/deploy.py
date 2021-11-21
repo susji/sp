@@ -66,6 +66,13 @@ files.template(name="Upload templatized frontend configuration",
                group="root",
                mode=644)
 
+files.template(name="Upload templatized backend configuration",
+               src="sp.conf.j2",
+               dest="/etc/sp.conf",
+               user="root",
+               group="root",
+               mode=644)
+
 systemd.daemon_reload()
 
 systemd.service(name="Ensure sp service is enabled and running",

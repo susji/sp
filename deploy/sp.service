@@ -6,7 +6,9 @@ After=network.target
 Type=simple
 User=_sp
 Group=_sp
-ExecStart=/usr/local/bin/sp
+EnvironmentFile=/etc/sp.conf
+ExecStart=/usr/local/bin/sp					\
+			    -endpoint $LL_ENDPOINT_SUBMIT
 Restart=on-failure
 RestartSec=5s
 PrivateTmp=true
