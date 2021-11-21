@@ -1,9 +1,25 @@
 # sp
 
-`sp` is a minimalistic encrypted pastebin-clone. You probably want to
-run it behind some TLS-terminating reverse proxy.
+`sp` is a minimalistic encrypted pastebin-clone. Presently it's mainly
+a proof-of-concept, so I advise against running it in production. In
+any case, you probably want to run it behind some TLS-terminating
+reverse proxy, so nginx stuff is included in the example deployment
+file.
 
 ## usage
 
-    $ sp -h
+	$ sp -h
 
+## deploying
+
+	$ cd ll
+	$ make
+	$ python3 -m venv ~/venv-pyinfra
+	$ ~/venv-pyinfra/bin/pip install -r deploy/requirements.txt
+	$ source ~/venv-pyinfra/bin/activate
+	$ cd deploy
+	$ pyinfra \
+		--data SP_DOMAIN=a.example.com \
+		--data FRONTEND_PATH=sp \
+		--data BACKEND_ENDPOINT_SUBMIT=submit \
+		a.example.com deploy.py
