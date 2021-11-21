@@ -1,97 +1,97 @@
 <html>
-  <head>
-    <link rel="stylesheet" href="style.css">
-    <script type="module">
-      import { config } from "./config.js"
-      import { decryptMessage, StringToArray, ObjectToArray } from "./sp.js";
+    <head>
+	<link rel="stylesheet" href="style.css">
+	<script type="module">
+	 import { config } from "./config.js"
+	 import { decryptMessage, StringToArray, ObjectToArray } from "./sp.js";
 
-      const getEncryptionSecret = function () {
-	  const anchor = window.top.location.hash.substr(1);
-	  console.log("anchor: ", anchor);
-	  const parts = anchor.split(",");
-	  console.log("parts: ", parts);
-	  return JSON.parse(atob(parts[1]));
-      }
+	 const getEncryptionSecret = function () {
+	     const anchor = window.top.location.hash.substr(1);
+	     console.log("anchor: ", anchor);
+	     const parts = anchor.split(",");
+	     console.log("parts: ", parts);
+	     return JSON.parse(atob(parts[1]));
+	 }
 
-      const getEncryptionResult = async function (plaintext) {
-	  const parts = window.top.location.hash.substr(1).split(",");
-	  const id = parts[0];
-	  
-	  const res = await fetch(
-	      config.remote + "/" + id,
-	      {
-		  method: "GET",
-		  headers: {
-		      "Accept": "text/plain"
-		  }
-	      });
-	  console.log("GET result: ", res.status);
-	  if (res.status !== 200) {
-	      console.log("Fetch failed.");
-	      return;
-	  }
-	  const raw = await res.text();
-	  document.getElementById("ciphertext").value = raw;
-	  const ic = raw.split("|");
-	  console.log("ic: ", ic);
+	 const getEncryptionResult = async function (plaintext) {
+	     const parts = window.top.location.hash.substr(1).split(",");
+	     const id = parts[0];
 
-	  ic[0] = Uint8Array.from(StringToArray(atob(ic[0])));
-	  ic[1] = Uint8Array.from(StringToArray(atob(ic[1])));
-	  return {
-	      iv: ic[0],
-	      ciphertext: ic[1]
-	  }
-      }
+	     const res = await fetch(
+		 config.remote + "/" + id,
+		 {
+		     method: "GET",
+		     headers: {
+			 "Accept": "text/plain"
+		     }
+	     });
+	     console.log("GET result: ", res.status);
+	     if (res.status !== 200) {
+		 console.log("Fetch failed.");
+		 return;
+	     }
+	     const raw = await res.text();
+	     document.getElementById("ciphertext").value = raw;
+	     const ic = raw.split("|");
+	     console.log("ic: ", ic);
 
-      const setDecryptionResult = function (plaintext) {
-	  document.getElementById("message-decrypted").value = plaintext;
-      }
+	     ic[0] = Uint8Array.from(StringToArray(atob(ic[0])));
+	     ic[1] = Uint8Array.from(StringToArray(atob(ic[1])));
+	     return {
+		 iv: ic[0],
+		 ciphertext: ic[1]
+	     }
+	 }
 
-      window.doDecrypt = async function (msg) {
-	  console.log("[decrypt]");
-	  const key = getEncryptionSecret();
-	  const res = await getEncryptionResult();
-	  setDecryptionResult("");
+	 const setDecryptionResult = function (plaintext) {
+	     document.getElementById("message-decrypted").value = plaintext;
+	 }
 
-	  console.log("res: ", res);
-	  
-	  const iv = Uint8Array.from(ObjectToArray(res.iv));
-	  try {
-	      const plaintext = await decryptMessage(
-		  res.ciphertext,
-		  key,
-		  iv);
-	      setDecryptionResult(new TextDecoder().decode(plaintext));
-	  } catch (err) {
-	      console.log("Decryption failed: ", err);
-	  }
-      }
+	 window.doDecrypt = async function (msg) {
+	     console.log("[decrypt]");
+	     const key = getEncryptionSecret();
+	     const res = await getEncryptionResult();
+	     setDecryptionResult("");
 
-      console.log("Backend at ", config.remote);
-      console.log("Submission endpoint is ", config.endpointSubmit);
-    </script>
-  </head>
-  <body>
-    <div>
-      <p>
-	<textarea
-	  id="ciphertext"
-	  placeholder="Press 'Fetch &amp; Decrypt'." readonly></textarea>
-      </p>
-    </div>
+	     console.log("res: ", res);
 
-    <div>
-      <form onsubmit="event.preventDefault(); doDecrypt();">
-	<p>
-	  <textarea
-	    id="message-decrypted"
-	    placeholder="Press 'Fetch &amp; Decrypt'."
-	    readonly></textarea>
-	</p>
-	<p>
-	  <input type="submit" value="Fetch &amp; Decrypt">
-	</p>
-      </form>
-    </div>
-  </body>
+	     const iv = Uint8Array.from(ObjectToArray(res.iv));
+	     try {
+		 const plaintext = await decryptMessage(
+		     res.ciphertext,
+		     key,
+		     iv);
+		 setDecryptionResult(new TextDecoder().decode(plaintext));
+	     } catch (err) {
+		 console.log("Decryption failed: ", err);
+	     }
+	 }
+
+	 console.log("Backend at ", config.remote);
+	 console.log("Submission endpoint is ", config.endpointSubmit);
+	</script>
+    </head>
+    <body>
+	<div>
+	    <p>
+		<textarea
+		    id="ciphertext"
+		    placeholder="Press 'Fetch &amp; Decrypt'." readonly></textarea>
+	    </p>
+	</div>
+
+	<div>
+	    <form onsubmit="event.preventDefault(); doDecrypt();">
+		<p>
+		    <textarea
+			id="message-decrypted"
+			placeholder="Press 'Fetch &amp; Decrypt'."
+			readonly></textarea>
+		</p>
+		<p>
+		    <input type="submit" value="Fetch &amp; Decrypt">
+		</p>
+	    </form>
+	</div>
+    </body>
 </html>

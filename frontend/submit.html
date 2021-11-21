@@ -1,74 +1,74 @@
 <html>
-  <head>
-    <link rel="stylesheet" href="style.css">
-    <script type="module">
-      import { config } from "./config.js"
-      import { encryptMessage } from "./sp.js";
+    <head>
+	<link rel="stylesheet" href="style.css">
+	<script type="module">
+	 import { config } from "./config.js"
+	 import { encryptMessage } from "./sp.js";
 
-      const setEncryptionResult = async function (enc, iv, key) {
-	  const i = btoa(String.fromCharCode(...iv));
-	  const e = btoa(String.fromCharCode(...new Uint8Array(enc)));
-	  const comb = i + "|" + e;
-	  console.log("setEncryptionResult, iv: ", typeof(i), i);
-	  const res = await fetch(
-	      config.remote + "/" + config.endpointSubmit,
-	      {
-		  method: "POST",
-		  body: comb,
-		  headers: {
-		      "Content-Type": "text/plain"
-		  }
-	      });
-	  console.log("POST result: ", res.status);
-	  if (res.status !== 200) {
-	      console.log("Submission failed.");
-	      return;
-	  }
-	  
-	  const id = await res.text();
-	  const keyprint = btoa(JSON.stringify(key));
-	  
-          console.log("ID: ", id);
-          let div = document.getElementById("submit-result");
-          let a = document.createElement("a");
-          a.appendChild(document.createTextNode("your paste"));
-          a.title = "your paste";
-          a.href = `fetch.html#${encodeURIComponent(id)},${keyprint}`;
-          div.innerHTML = "";
-          div.appendChild(a);
-      }
-      
-      window.getPlaintext = function () {
-	  return document.getElementById("message-to-encrypt").value
-      }
+	 const setEncryptionResult = async function (enc, iv, key) {
+	     const i = btoa(String.fromCharCode(...iv));
+	     const e = btoa(String.fromCharCode(...new Uint8Array(enc)));
+	     const comb = i + "|" + e;
+	     console.log("setEncryptionResult, iv: ", typeof(i), i);
+	     const res = await fetch(
+		 config.remote + "/" + config.endpointSubmit,
+		 {
+		     method: "POST",
+		     body: comb,
+		     headers: {
+			 "Content-Type": "text/plain"
+		     }
+	     });
+	     console.log("POST result: ", res.status);
+	     if (res.status !== 200) {
+		 console.log("Submission failed.");
+		 return;
+	     }
 
-      window.doEncrypt = async function (msg) {
-	  console.log("[encrypt]");
-	  const res = await encryptMessage(msg);
+	     const id = await res.text();
+	     const keyprint = btoa(JSON.stringify(key));
 
-	  setEncryptionResult(res.ciphertext, res.iv, res.key);
-      }
+	     console.log("ID: ", id);
+	     let div = document.getElementById("submit-result");
+	     let a = document.createElement("a");
+	     a.appendChild(document.createTextNode("your paste"));
+	     a.title = "your paste";
+	     a.href = `fetch.html#${encodeURIComponent(id)},${keyprint}`;
+	     div.innerHTML = "";
+	     div.appendChild(a);
+	 }
 
-      console.log("Backend at ", config.remote);
-      console.log("Submission endpoint is ", config.endpointSubmit);
-    </script>
-  </head>
-  <body>
-    <div>
-      <form onsubmit="event.preventDefault(); doEncrypt(getPlaintext());">
-	<p>
-	  <textarea
-	    id="message-to-encrypt"
-	    placeholder="Insert text for encryption here.">Hello World!</textarea>
-	</p>
-	<p>
-	  <input type="submit" value="Encrypt and Submit">
-	</p>
-      </form>
-    </div>
+	 window.getPlaintext = function () {
+	     return document.getElementById("message-to-encrypt").value
+	 }
 
-    <div id="submit-result">
-    </div>
+	 window.doEncrypt = async function (msg) {
+	     console.log("[encrypt]");
+	     const res = await encryptMessage(msg);
 
-  </body>
+	     setEncryptionResult(res.ciphertext, res.iv, res.key);
+	 }
+
+	 console.log("Backend at ", config.remote);
+	 console.log("Submission endpoint is ", config.endpointSubmit);
+	</script>
+    </head>
+    <body>
+	<div>
+	    <form onsubmit="event.preventDefault(); doEncrypt(getPlaintext());">
+		<p>
+		    <textarea
+			id="message-to-encrypt"
+			placeholder="Insert text for encryption here.">Hello World!</textarea>
+		</p>
+		<p>
+		    <input type="submit" value="Encrypt and Submit">
+		</p>
+	    </form>
+	</div>
+
+	<div id="submit-result">
+	</div>
+
+    </body>
 </html>
