@@ -18,7 +18,6 @@ attempt to get you an Let's Encrypt certificate. Your browser
 interface would be at `https://a.example.com/sp` and the backend's
 submission endpoint would be `https://a.example.com/submit`.
 
-	$ cd ll
 	$ make
 	$ python3 -m venv ~/venv-pyinfra
 	$ ~/venv-pyinfra/bin/pip install -r deploy/requirements.txt
