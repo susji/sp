@@ -12,6 +12,11 @@ import (
 	"github.com/susji/sp/storage"
 )
 
+var (
+	version   = "v0.dev"
+	buildtime = "<no time>"
+)
+
 const (
 	BYTES_ID      = 4
 	MAX_ENTRIES   = 10_000
@@ -123,6 +128,7 @@ func main() {
 		log.SetFlags(0)
 	}
 
+	log.Printf("sp version: %s built at %s", version, buildtime)
 	log.Print("Listen address........ ", s.laddr)
 	log.Print("Submission endpoint... ", s.endpoint)
 	log.Print("Wildcard CORS......... ", s.wildcardCors)
