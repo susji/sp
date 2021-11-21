@@ -9,7 +9,7 @@ import (
 	"os"
 	"os/signal"
 
-	"example.com/s/sp/storage"
+	"github.com/susji/sp/storage"
 )
 
 const (
