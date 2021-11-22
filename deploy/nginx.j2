@@ -22,7 +22,7 @@ server {
 
     location /{{ host.data.FRONTEND_PATH }} {
         rewrite ^/[^/]+?/(.*)$ /$1 break;
-        root /var/www/sp;
+        root {{ host.data.FRONTEND_DIR }};
     }
 
     client_body_buffer_size 4k;

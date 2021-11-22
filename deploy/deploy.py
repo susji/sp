@@ -13,9 +13,10 @@ if not host.data.FRONTEND_PATH:
     raise RuntimeError("Define FRONTEND_PATH")
 if not host.data.BACKEND_ENDPOINT_SUBMIT:
     raise RuntimeError("Define BACKEND_ENDPOINT_SUBMIT")
+if not host.data.FRONTEND_DIR:
+    host.data.FRONTEND_DIR = "/var/www/sp"
 
 DOM = host.data.SP_DOMAIN
-FRONTEND_DIR = "/var/www/sp"
 
 apt.packages(name="Ensure all relevant apt packages",
              packages=["nginx", "certbot", "python3-certbot-nginx"])
@@ -52,9 +53,11 @@ files.put(name="Upload systemd unit file",
 
 frontend_files = ("fetch.html", "submit.html", "sp.js", "style.css")
 for ff in frontend_files:
-    files.put(name=f"Upload frontend file: {ff}",
-              src=os.path.join("../frontend/", ff),
-              dest=os.path.join(FRONTEND_DIR, ff),
+    src = os.path.join("../frontend/", ff)
+    dest = os.path.join(host.data.FRONTEND_DIR, ff)
+    files.put(name=f"Upload frontend file: {src} -> {dest}",
+              src=src,
+              dest=dest,
               user="root",
               group="root",
               mode=644)
